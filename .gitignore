@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+
+# Archivos subidos desde el panel en modo local, y bucket de desarrollo
+backend/uploads/*
+!backend/uploads/noticias/
+backend/uploads/noticias/*
+!backend/uploads/noticias/ejemplo-*.webp
+backend/.bucket-simulado/
+
+.idea/
+.vscode/
+*.log

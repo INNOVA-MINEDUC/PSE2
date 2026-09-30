@@ -1,0 +1,93 @@
+/* ---------------- Boton para llevar a otra pagina ej: ir a analisis geografico ---------------- */
+.geo-btn-container{
+    display:flex;
+    justify-content:center;
+    margin:40px 0;
+}
+
+.geo-btn{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    background:linear-gradient(90deg,#1cb7d4,#0c7cb8);
+    color:#fff;
+    text-decoration:none;
+    padding:16px 32px;
+    border-radius:14px;
+    font-size:20px;
+    font-weight:700;
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+    transition:all .3s ease;
+}
+
+.geo-btn i:first-child{
+    font-size:28px;
+}
+
+.geo-btn i:last-child{
+    margin-left:8px;
+    transition:transform .3s;
+}
+
+.geo-btn:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 25px rgba(0,0,0,.20);
+}
+
+.geo-btn:hover i:last-child{
+    transform:translateX(6px);
+}
+
+/* ===========================
+   BOTÓN para generar en formato PDF
+=========================== */
+
+.geo-btn-pdf{
+
+    display:flex;
+    align-items:center;
+    gap:18px;
+
+    background:linear-gradient(90deg,#0c2f67,#134b99);
+
+    color:#fff;
+    border:none;
+    border-radius:14px;
+
+    padding:16px 34px;
+
+    font-size:18px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+
+    transition:all .30s ease;
+}
+
+.geo-btn-pdf i:first-child{
+    font-size:28px;
+    color:#ff6b6b;
+}
+
+.geo-btn-pdf i:last-child{
+    margin-left:10px;
+    transition:.30s;
+}
+
+.geo-btn-pdf:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 12px 28px rgba(0,0,0,.20);
+
+    background:linear-gradient(90deg,#134b99,#0c2f67);
+
+}
+
+.geo-btn-pdf:hover i:last-child{
+
+    transform:translateY(3px);
+
+}

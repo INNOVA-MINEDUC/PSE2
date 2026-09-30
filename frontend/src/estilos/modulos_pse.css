@@ -1,0 +1,1009 @@
+/* =========================================
+   MÓDULOS PSE (Centro 1528, Apoyo funerario, Promoción)
+   Extiende portal_pse.css con sus mismos colores, radios y sombras.
+   ========================================= */
+
+/* Tarjetas de beneficios que enlazan a su módulo */
+a.pse-benefit-card {
+    transition: all 0.25s ease;
+}
+
+a.pse-benefit-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(16, 42, 91, 0.16);
+}
+
+/* Párrafo introductorio bajo el título de sección */
+.mod-intro {
+    max-width: 860px;
+    margin: -10px auto 30px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--texto);
+}
+
+/* Rejilla de 4 tarjetas (misma escala que .geo-morb-grid) */
+.mod-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin: 30px 0;
+}
+
+/* Tarjeta blanca con ícono, título y texto (base: .geo-morb-card) */
+.mod-card h3 {
+    margin: 0 0 8px;
+    color: var(--azul);
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.mod-card p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--texto);
+}
+
+/* Lista numerada dentro de .pse-wide-card */
+.mod-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: mod-list;
+    display: grid;
+    gap: 16px;
+}
+
+.mod-list li {
+    counter-increment: mod-list;
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 14px;
+    align-items: start;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--texto);
+}
+
+.mod-list li::before {
+    content: counter(mod-list);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--azul);
+    color: #fff;
+    font-weight: 900;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mod-list strong {
+    color: var(--azul);
+}
+
+/* Lista con viñetas dentro de .pse-wide-card */
+.mod-bullets {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--texto);
+}
+
+/* Tarjetas con fotografía (actividades) */
+.mod-photo-card {
+    background: #fff;
+    border: 1px solid #e8edf4;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(16, 42, 91, 0.08);
+}
+
+.mod-photo-card img {
+    display: block;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.mod-photo-card h3 {
+    margin: 0;
+    padding: 16px;
+    color: var(--azul);
+    font-size: 15px;
+    line-height: 1.3;
+    font-weight: 900;
+    text-align: center;
+}
+
+/* Espacio antes de la barra de contacto */
+.mod-contacto {
+    margin: 40px 0 10px;
+}
+
+@media (max-width: 1024px) {
+    .mod-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .mod-grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   NOTICIAS
+   ========================================= */
+
+.mod-noticias-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin: 30px 0;
+}
+
+.mod-noticia-card {
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+}
+
+.mod-noticia-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(16, 42, 91, 0.16);
+}
+
+.mod-noticia-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 16px 18px 18px;
+    text-align: left;
+}
+
+.mod-noticia-body h3 {
+    padding: 0;
+    margin: 6px 0 8px;
+    text-align: left;
+}
+
+.mod-noticia-body p {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--texto);
+}
+
+.mod-noticia-fecha {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--cyan);
+}
+
+.mod-noticia-body .pse-arrow {
+    margin-top: auto;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--azul);
+}
+
+/* Detalle de noticia */
+.mod-articulo {
+    max-width: 860px;
+    margin: 0 auto 30px;
+}
+
+.mod-articulo-img {
+    display: block;
+    width: 100%;
+    max-height: 460px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 22px;
+}
+
+.mod-articulo p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--texto);
+    margin: 0 0 16px;
+}
+
+.mod-articulo .mod-articulo-autor {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--azul);
+    margin: 22px 0 0;
+}
+
+/* Video 16:9 */
+.mod-video {
+    max-width: 860px;
+    margin: 0 auto 30px;
+    aspect-ratio: 16 / 9;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(16, 42, 91, 0.08);
+}
+
+.mod-video iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+@media (max-width: 1024px) {
+    .mod-noticias-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .mod-noticias-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   PANEL DE ADMINISTRACIÓN
+   ========================================= */
+
+.adm-login {
+    max-width: 440px;
+    margin: 0 auto;
+    display: grid;
+    gap: 18px;
+}
+
+.adm-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.adm-titulo {
+    margin: 0;
+    color: var(--azul);
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.adm-usuario,
+.adm-ayuda {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--texto);
+}
+
+.adm-tabs {
+    display: flex;
+    gap: 6px;
+    border-bottom: 2px solid #e6edf5;
+    margin-bottom: 24px;
+}
+
+.adm-tab {
+    background: none;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    padding: 12px 18px;
+    font: 800 14px 'Montserrat', Arial, sans-serif;
+    color: var(--texto);
+    cursor: pointer;
+}
+
+.adm-tab.activa {
+    color: var(--azul);
+    border-bottom-color: var(--cyan);
+}
+
+.adm-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.adm-form {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.adm-subtitulo {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin: 0;
+    color: var(--azul);
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.adm-campo {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--azul);
+}
+
+.adm-campo small,
+.adm-imagen small {
+    display: block;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.adm-campo input,
+.adm-campo select,
+.adm-campo textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #cfd9e6;
+    border-radius: 10px;
+    font: 500 14px 'Montserrat', Arial, sans-serif;
+    color: var(--azul);
+    background: #fff;
+}
+
+.adm-campo textarea {
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.adm-campo input:focus,
+.adm-campo select:focus,
+.adm-campo textarea:focus {
+    outline: 2px solid var(--celeste);
+    outline-offset: 1px;
+    border-color: var(--celeste);
+}
+
+.adm-fila {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.adm-imagen {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.adm-imagen img {
+    width: 220px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #e6edf5;
+}
+
+.adm-imagen > div {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+}
+
+/* Botón que abre el selector de archivos */
+.adm-archivo {
+    position: relative;
+    cursor: pointer;
+}
+
+.adm-archivo input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.adm-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--azul);
+}
+
+.adm-check input {
+    width: 18px;
+    height: 18px;
+}
+
+.adm-acciones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.adm-btn-bloque {
+    width: 100%;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.adm-form .pse-btn,
+.adm-barra .pse-btn,
+.adm-cabecera .pse-btn {
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.pse-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+
+.adm-link {
+    background: none;
+    border: 0;
+    padding: 0 4px;
+    font: 700 13px 'Montserrat', Arial, sans-serif;
+    color: var(--celeste);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.adm-link.peligro {
+    color: #c0392b;
+}
+
+.adm-error,
+.adm-ok {
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.adm-error {
+    background: #fdecea;
+    color: #a32618;
+}
+
+.adm-ok {
+    background: #e8f5e9;
+    color: #256b2a;
+}
+
+.adm-tabla {
+    padding: 0;
+    text-align: left;
+}
+
+.adm-tabla td {
+    font-size: 13px;
+    color: var(--texto);
+}
+
+.adm-nowrap {
+    white-space: nowrap;
+}
+
+.adm-estado {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.adm-estado.on {
+    background: #e8f5e9;
+    color: #256b2a;
+}
+
+.adm-estado.off {
+    background: #eef1f5;
+    color: #64748b;
+}
+
+.adm-recurso {
+    display: grid;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid #eef1f5;
+}
+
+@media (max-width: 640px) {
+    .adm-fila {
+        grid-template-columns: 1fr;
+    }
+}
+
+.adm-cabecera ~ .adm-ok,
+.adm-cabecera ~ .adm-error {
+    margin-bottom: 14px;
+}
+
+/* =========================================
+   MENÚ PRINCIPAL
+   ========================================= */
+
+/* Botón del submenú con el mismo aspecto que los enlaces del menú */
+.pse-nav-toggle {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    color: #ffffff;
+    font: 700 13px 'Montserrat', Arial, sans-serif;
+    text-transform: uppercase;
+}
+
+.pse-nav-toggle span {
+    display: inline-block;
+    font-size: 10px;
+    transition: transform 0.2s ease;
+}
+
+.pse-nav-grupo.abierto .pse-nav-toggle span {
+    transform: rotate(180deg);
+}
+
+/* Página actual */
+.pse-nav-links > a,
+.pse-nav-toggle {
+    position: relative;
+    padding: 6px 0;
+}
+
+.pse-nav-links > a.router-link-active::after,
+.pse-nav-toggle.router-link-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--celeste);
+}
+
+.pse-nav-grupo {
+    position: relative;
+}
+
+.pse-nav-submenu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    min-width: 260px;
+    padding: 8px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 14px 35px rgba(16, 42, 91, 0.22);
+}
+
+.pse-nav-grupo.abierto .pse-nav-submenu {
+    display: grid;
+}
+
+.pse-nav-links .pse-nav-submenu a {
+    display: block;
+    padding: 11px 14px;
+    border-radius: 8px;
+    color: var(--azul);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: none;
+    white-space: nowrap;
+}
+
+.pse-nav-links .pse-nav-submenu a:hover,
+.pse-nav-links .pse-nav-submenu a.router-link-active {
+    background: var(--gris);
+    color: var(--celeste);
+}
+
+/* Acceso al panel */
+.pse-nav-links a.pse-nav-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 8px;
+    font-size: 12px;
+    text-transform: none;
+}
+
+.pse-nav-links > a,
+.pse-nav-toggle {
+    white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+    .pse-nav-submenu {
+        left: 0;
+        transform: none;
+        max-width: calc(100vw - 32px);
+    }
+
+}
+
+.pse-nav-links a.pse-nav-login:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.pse-nav-links a.pse-nav-login::after {
+    display: none;
+}
+
+/* La tarjeta 1528 del encabezado es un enlace */
+a.pse-hero-stat {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+a.pse-hero-stat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(16, 42, 91, 0.28);
+}
+
+@media (max-width: 640px) {
+    .pse-nav-toggle {
+        font-size: 11px;
+    }
+
+    /* El submenú se despliega a todo el ancho, debajo del menú */
+    .pse-nav-links {
+        position: relative;
+    }
+
+    .pse-nav-grupo {
+        position: static;
+    }
+
+    .pse-nav-submenu {
+        top: calc(100% + 10px);
+        left: 0;
+        right: 0;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .pse-nav-links .pse-nav-submenu a {
+        white-space: normal;
+        text-align: center;
+    }
+}
+
+.mod-photo-card .mod-photo-texto {
+    margin: -8px 0 0;
+    padding: 0 16px 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--texto);
+}
+
+/* Apartados dentro de una sección del panel */
+.adm-subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -8px 0 22px;
+}
+
+.adm-subtab {
+    padding: 8px 14px;
+    border: 1px solid #cfd9e6;
+    border-radius: 20px;
+    background: #fff;
+    font: 700 13px 'Montserrat', Arial, sans-serif;
+    color: var(--texto);
+    cursor: pointer;
+}
+
+.adm-subtab.activa {
+    background: var(--azul);
+    border-color: var(--azul);
+    color: #fff;
+}
+
+/* Formulario en rejilla: 3 columnas; .completo ocupa toda la fila */
+.adm-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px 16px;
+    align-items: start;
+}
+
+.adm-form-grid .completo {
+    grid-column: 1 / -1;
+}
+
+.adm-form-grid .adm-check {
+    align-self: end;
+    min-height: 44px;
+}
+
+p.adm-campo {
+    margin: 0;
+    font-weight: 500;
+}
+
+p.adm-campo span {
+    font-weight: 700;
+}
+
+.adm-archivo-datos {
+    flex: 1;
+    min-width: 260px;
+}
+
+.adm-miniatura {
+    width: 64px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+}
+
+.adm-filtro {
+    min-width: 260px;
+}
+
+.adm-mi-clave {
+    margin-top: 32px;
+}
+
+@media (max-width: 1024px) {
+    .adm-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .adm-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   PANEL: encabezado de apartado, acciones y tablas
+   ========================================= */
+
+/* Barra que agrupa los apartados de una sección */
+.adm-subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: -6px 0 24px;
+    padding: 6px;
+    background: var(--gris);
+    border: 1px solid #e6edf5;
+    border-radius: 14px;
+}
+
+.adm-subtab {
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--azul);
+}
+
+.adm-subtab:hover {
+    background: #e6eef8;
+}
+
+.adm-subtab.activa {
+    background: var(--azul);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(16, 42, 91, 0.2);
+}
+
+/* Título + descripción + filtro + botón principal */
+.adm-encabezado {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 24px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.adm-encabezado h2 {
+    margin: 0 0 4px;
+    color: var(--azul);
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.adm-encabezado .adm-ayuda {
+    margin: 0;
+    max-width: 640px;
+    line-height: 1.5;
+}
+
+.adm-encabezado-acciones {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.adm-encabezado .pse-btn {
+    min-height: 44px;
+    padding: 10px 20px;
+}
+
+/* Acciones de cada fila */
+.adm-accion {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    margin: 2px 4px 2px 0;
+    border: 1px solid var(--azul);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--azul);
+    font: 700 12px 'Montserrat', Arial, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.adm-accion:hover {
+    background: var(--azul);
+    color: #fff;
+}
+
+.adm-accion.peligro {
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+.adm-accion.peligro:hover,
+.adm-accion.peligro.confirmar {
+    background: #c0392b;
+    color: #fff;
+}
+
+.adm-confirmar {
+    font-size: 12px;
+    font-weight: 700;
+    color: #a32618;
+    margin-right: 6px;
+}
+
+/* Tabla del panel */
+.adm-tabla td {
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.adm-tabla td.adm-principal {
+    font-weight: 700;
+    color: var(--azul);
+}
+
+.adm-tabla tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.adm-tabla .adm-vacio {
+    padding: 28px;
+    text-align: center;
+    color: #64748b;
+}
+
+.adm-miniatura {
+    width: 72px;
+    height: 48px;
+}
+
+/* =========================================
+   PANEL: carga masiva
+   ========================================= */
+
+.adm-pasos li {
+    font-size: 14px;
+}
+
+.adm-descargas {
+    margin-top: 10px;
+}
+
+.adm-descargas .adm-accion {
+    padding: 8px 14px;
+}
+
+.adm-accion:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.adm-archivo-nombre {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--azul);
+}
+
+/* Resumen de la vista previa (mismas proporciones que .pse-stat-card) */
+.adm-resumen-carga {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+}
+
+.adm-resumen-carga > div {
+    padding: 16px;
+    border: 1px solid #e6edf5;
+    border-radius: 14px;
+    background: var(--gris);
+    text-align: center;
+}
+
+.adm-resumen-carga strong {
+    display: block;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--azul);
+}
+
+.adm-resumen-carga span {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--texto);
+}
+
+.adm-resumen-carga .con-errores {
+    background: #fdecea;
+    border-color: #f5c6c0;
+}
+
+.adm-resumen-carga .con-errores strong {
+    color: #a32618;
+}
+
+.adm-resumen-carga .sin-errores {
+    background: #e8f5e9;
+    border-color: #c8e6c9;
+}
+
+.adm-resumen-carga .sin-errores strong {
+    color: #256b2a;
+}
+
+.adm-aviso {
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #fff8e1;
+    color: #7a5b00;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.adm-errores {
+    max-height: 320px;
+    overflow-y: auto;
+}

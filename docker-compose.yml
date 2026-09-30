@@ -1,0 +1,51 @@
+# Portal del Programa de Salud Escolar (PSE): frontend Vue (nginx) + backend Node.
+#
+# Producción (la base de datos MySQL es externa; configurar backend/.env):
+#   docker compose up -d --build
+#   docker compose exec pse-backend node scripts/migrate.js
+#   docker compose exec pse-backend node scripts/crear-admin.js correo@mineduc.gob.gt "Nombre"
+#
+# Desarrollo local: solo la base de datos, con los datos de database/
+#   docker compose --profile local up -d db
+#
+# El sitio debe publicarse detrás de HTTPS: la cookie de sesión del panel es Secure.
+services:
+  pse-backend:
+    build: ./backend
+    container_name: pse-backend
+    restart: unless-stopped
+    env_file: ./backend/.env
+    environment:
+      PORT: 3000
+    volumes:
+      - pse-uploads:/app/uploads
+
+  pse-frontend:
+    build: ./frontend
+    container_name: pse-frontend
+    restart: unless-stopped
+    ports:
+      - "8089:8080"
+    depends_on:
+      - pse-backend
+
+  # Solo desarrollo: MySQL local en 127.0.0.1:3317 (usuario root / root, base pse).
+  # Al crearse por primera vez carga los .sql de database/ en orden.
+  db:
+    image: mysql:8.0
+    profiles: ["local"]
+    container_name: pse-db
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pse
+    ports:
+      - "127.0.0.1:3317:3306"
+    volumes:
+      - pse-db:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  pse-uploads:
+  pse-db:
