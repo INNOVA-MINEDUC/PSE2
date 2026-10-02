@@ -174,7 +174,7 @@ const card = (icono, titulo, campoHistorico, actual, prefijo = '') => ({
 })
 
 const indicadores = computed(() => [
-  card('stethoscope.png', ['Consultas', 'Atendidas'], 'consultas', r.value.atenciones),
+  card('stethoscope.png', ['Atenciones'], 'consultas', r.value.atenciones),
   card('students.png', ['Estudiantes', 'Atendidos'], 'estudiantes', r.value.estudiantes_atendidos),
   card('center.png', ['Llamadas', 'al 1528'], 'llamadas', r.value.llamadas)
 ])

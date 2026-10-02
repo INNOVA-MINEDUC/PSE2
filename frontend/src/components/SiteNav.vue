@@ -1,6 +1,6 @@
 <template>
   <nav ref="nav" class="pse-nav-links" aria-label="Navegación principal">
-    <template v-for="item in MENU" :key="item.nombre">
+    <template v-for="item in menu" :key="item.nombre">
 
       <!-- Submenú -->
       <div v-if="item.hijos" class="pse-nav-grupo" :class="{ abierto: abierto === item.nombre }">
@@ -40,9 +40,10 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
+import { useVisibilidad } from '../composables/useVisibilidad'
 
 const MENU = [
   { nombre: 'Inicio', to: '/' },
@@ -67,6 +68,12 @@ const MENU = [
 
 const route = useRoute()
 const { usuario } = useAuth()
+const { paginaVisible } = useVisibilidad()
+
+// Quita las páginas ocultas; un submenú sin opciones desaparece
+const menu = computed(() => MENU
+  .map(item => item.hijos ? { ...item, hijos: item.hijos.filter(h => paginaVisible(h.to)) } : item)
+  .filter(item => item.hijos ? item.hijos.length : paginaVisible(item.to)))
 
 const nav = ref(null)
 const abierto = ref('')

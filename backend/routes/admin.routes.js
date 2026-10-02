@@ -3,7 +3,7 @@ import {
   listarNoticias, crearNoticia, actualizarNoticia, eliminarNoticia,
   listarRecursos, guardarRecurso, archivoSubido,
 } from "../controllers/admin.controller.js";
-import { listar, crear, actualizar, eliminar, guardarConfiguracion } from "../controllers/crud.controller.js";
+import { listar, crear, actualizar, eliminar, guardarConfiguracion, guardarVisibilidad } from "../controllers/crud.controller.js";
 import { descargarPlantilla, importar } from "../controllers/importar.controller.js";
 import {
   listarUsuarios, crearUsuario, actualizarUsuario, restablecerClave, eliminarUsuario,
@@ -34,6 +34,7 @@ router.put("/c/:coleccion/:id", actualizar);
 router.delete("/c/:coleccion/:id", eliminar);
 
 router.put("/configuracion", guardarConfiguracion);
+router.put("/visibilidad", guardarVisibilidad);
 
 router.get("/usuarios", listarUsuarios);
 router.post("/usuarios", crearUsuario);

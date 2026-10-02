@@ -45,6 +45,7 @@
         <AdminNoticias v-if="apartado.id === 'noticias'" />
         <AdminRecursos v-else-if="apartado.id === 'recursos'" />
         <AdminConfiguracion v-else-if="apartado.id === 'configuracion'" />
+        <AdminVisibilidad v-else-if="apartado.id === 'visibilidad'" />
         <AdminUsuarios v-else-if="apartado.id === 'usuarios'" />
         <AdminCrud v-else :key="apartado.id" :coleccion="apartado.id" />
 
@@ -63,6 +64,7 @@ import FooterLogo from '../components/FooterLogo.vue'
 import AdminNoticias from '../components/admin/AdminNoticias.vue'
 import AdminRecursos from '../components/admin/AdminRecursos.vue'
 import AdminConfiguracion from '../components/admin/AdminConfiguracion.vue'
+import AdminVisibilidad from '../components/admin/AdminVisibilidad.vue'
 import AdminUsuarios from '../components/admin/AdminUsuarios.vue'
 import AdminCrud from '../components/admin/AdminCrud.vue'
 import { useAuth } from '../composables/useAuth'
@@ -89,7 +91,8 @@ const SECCIONES = [
       { id: 'materiales', nombre: 'Material educativo' },
       { id: 'normativa', nombre: 'Normativa legal' },
       { id: 'recursos', nombre: 'Videos y documentos' },
-      { id: 'configuracion', nombre: 'Datos generales' }
+      { id: 'configuracion', nombre: 'Datos generales' },
+      { id: 'visibilidad', nombre: 'Visibilidad' }
     ]
   },
   { id: 'usuarios', nombre: 'Usuarios' }

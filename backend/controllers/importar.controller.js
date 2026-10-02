@@ -36,12 +36,13 @@ const importable = (req, res) => {
 const columnasArchivo = (c) =>
   c.importar.modo === "reemplazar" ? Object.keys(c.campos) : [c.pk, ...Object.keys(c.campos).filter((k) => k !== c.pk)];
 
-// Encabezados aceptados: nombre técnico o etiqueta legible (sin tildes ni mayúsculas)
+// Encabezados aceptados: nombre técnico, etiqueta legible o alias viejo (sin tildes ni mayúsculas)
 function aliasDe(c) {
   const alias = new Map();
   for (const col of columnasArchivo(c)) {
     alias.set(normalizar(col), col);
     if (c.etiquetas?.[col]) alias.set(normalizar(c.etiquetas[col]), col);
+    for (const viejo of c.alias?.[col] || []) alias.set(normalizar(viejo), col);
   }
   return alias;
 }

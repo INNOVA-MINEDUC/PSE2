@@ -36,7 +36,7 @@
           <p class="mod-intro">La noticia que busca no existe o ya no está disponible.</p>
         </template>
 
-        <GeoBtn to="/promocion">Ver todas las noticias</GeoBtn>
+        <GeoBtn v-if="paginaVisible('/promocion')" to="/promocion">Ver todas las noticias</GeoBtn>
 
       </div>
     </section>
@@ -53,6 +53,7 @@ import SectionTitle from '../components/SectionTitle.vue'
 import GeoBtn from '../components/GeoBtn.vue'
 import FooterLogo from '../components/FooterLogo.vue'
 import { useNoticia } from '../composables/useNoticias'
+import { paginaVisible } from '../composables/useVisibilidad'
 import { archivoUrl } from '../api'
 import { fechaLarga } from '../format'
 

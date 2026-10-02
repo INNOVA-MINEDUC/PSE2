@@ -143,6 +143,11 @@
       color: #ffffff;
     }
 
+    /* Sin botones (páginas ocultas): sin margen sobrante */
+    .pse-hero-content p:last-child {
+      margin-bottom: 0;
+    }
+
     .pse-hero-actions {
       display: flex;
       gap: 16px;
@@ -287,9 +292,10 @@
     }
 
     /* ACCESO RÁPIDO */
+    /* --cols / --cols-md: según las tarjetas visibles (Inicio.vue), para no dejar huecos */
     .pse-quick-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
       gap: 18px;
     }
 
@@ -360,14 +366,17 @@
     }
 
     /* CIFRAS */
+    /* Se ajusta al ancho de las tarjetas visibles: el título queda alineado con la primera */
     .pse-stats-wrap {
-      max-width: 860px;
+      width: fit-content;
+      max-width: min(860px, 100%);
       margin: 0 auto;
     }
 
     .pse-stats-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(var(--cols, 2), minmax(0, 420px));
+      justify-content: center;
       gap: 14px;
     }
 
@@ -714,11 +723,16 @@
       }
 
       .pse-quick-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(var(--cols-md, 2), minmax(0, 1fr));
       }
 
       .pse-benefits-grid {
         grid-template-columns: repeat(3, 1fr);
+      }
+
+      /* Hasta 3 cifras en una fila: el número se achica para caber */
+      .pse-stat-card strong {
+        font-size: clamp(26px, 3.6vw, 38px);
       }
 
       .pse-steps-row {
@@ -791,6 +805,10 @@
 
       .pse-stat-card strong {
         font-size: 34px;
+      }
+
+      .pse-stats-wrap {
+        width: auto;
       }
 
       .pse-step {

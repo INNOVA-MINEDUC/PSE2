@@ -29,7 +29,7 @@
             :etiqueta-llamadas="departamento ? 'Llamadas válidas por persona enferma' : 'Total de llamadas'"
           />
 
-          <GeoBtn to="/material">Ir a Material Educativo</GeoBtn>
+          <GeoBtn v-if="paginaVisible('/material')" to="/material">Ir a Material Educativo</GeoBtn>
         </template>
 
       </div>
@@ -44,6 +44,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import MapaGuatemala from '../components/MapaGuatemala.vue'
+import { paginaVisible } from '../composables/useVisibilidad'
 import ResumenPse from '../components/ResumenPse.vue'
 import GeoBtn from '../components/GeoBtn.vue'
 import FooterLogo from '../components/FooterLogo.vue'

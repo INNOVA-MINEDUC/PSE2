@@ -14,7 +14,7 @@
         {{ nf(r.atenciones) }}
       </div>
       <div class="geo-label">
-        Consultas Atendidas
+        Atenciones
       </div>
     </div>
 
@@ -48,7 +48,7 @@
 
   <!-- LEYENDA -->
   <div class="geo-note">
-    <center><strong>*Consultas Atendidas: </strong> corresponde a la cantidad de veces
+    <center><strong>*Atenciones: </strong> corresponde a la cantidad de veces
       que un mismo estudiante registra más de una atención en el período indicado.</center>
   </div>
 

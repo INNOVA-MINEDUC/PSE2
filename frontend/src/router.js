@@ -9,6 +9,7 @@ import ApoyoFunerario from './views/ApoyoFunerario.vue'
 import Promocion from './views/Promocion.vue'
 import NoticiaDetalle from './views/NoticiaDetalle.vue'
 import { useAuth } from './composables/useAuth'
+import { cargarVisibilidad, paginaVisible } from './composables/useVisibilidad'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -38,6 +39,10 @@ const router = createRouter({
 })
 
 router.beforeEach(async to => {
+  // Páginas ocultas desde el panel: también por URL directa
+  await cargarVisibilidad()
+  if (!paginaVisible(to.path)) return '/'
+
   if (!to.meta.requiereSesion && !to.meta.soloInvitados) return true
 
   const { cargarSesion } = useAuth()

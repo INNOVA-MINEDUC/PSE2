@@ -1,5 +1,5 @@
 import { pool } from "../db.js";
-import { COLECCIONES, CONFIGURACION } from "../colecciones.js";
+import { COLECCIONES, CONFIGURACION, VISIBILIDAD } from "../colecciones.js";
 import { validarRegistro, validarCampo } from "../validacion.js";
 import { borrarSubido } from "../middleware/upload.middleware.js";
 
@@ -48,6 +48,39 @@ export const leerConfiguracion = async (req, res) => {
   } catch (err) {
     console.error("ERROR leerConfiguracion:", err);
     res.status(500).json({ error: "Error obteniendo la configuración." });
+  }
+};
+
+// Completa con los valores por defecto y descarta claves desconocidas
+function normalizarVisibilidad(v = {}) {
+  const visible = (x) => x !== false && x !== 0 && x !== "0";
+  const texto = (x, defecto) => String(x ?? "").trim().slice(0, 100) || defecto;
+  return {
+    paginas: Object.fromEntries(VISIBILIDAD.paginas.map((k) => [k, visible(v.paginas?.[k])])),
+    secciones: Object.fromEntries(VISIBILIDAD.secciones.map((k) => [k, visible(v.secciones?.[k])])),
+    cifras: Object.fromEntries(
+      Object.entries(VISIBILIDAD.cifras).map(([k, defecto]) => [
+        k,
+        { visible: visible(v.cifras?.[k]?.visible), texto: texto(v.cifras?.[k]?.texto, defecto) },
+      ])
+    ),
+  };
+}
+
+// GET /api/visibilidad
+export const leerVisibilidad = async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT valor FROM configuracion WHERE clave = 'visibilidad'");
+    let guardado = {};
+    try {
+      guardado = rows.length ? JSON.parse(rows[0].valor) : {};
+    } catch {
+      console.error("ERROR leerVisibilidad: JSON inválido en configuracion.visibilidad");
+    }
+    res.json({ data: normalizarVisibilidad(guardado) });
+  } catch (err) {
+    console.error("ERROR leerVisibilidad:", err);
+    res.status(500).json({ error: "Error obteniendo la visibilidad." });
   }
 };
 
@@ -155,5 +188,20 @@ export const guardarConfiguracion = async (req, res) => {
   } catch (err) {
     console.error("ERROR guardarConfiguracion:", err);
     res.status(500).json({ error: "Error guardando la configuración." });
+  }
+};
+
+// PUT /api/admin/visibilidad  { paginas, secciones, cifras }
+export const guardarVisibilidad = async (req, res) => {
+  const datos = normalizarVisibilidad(req.body);
+  try {
+    await pool.query(
+      "INSERT INTO configuracion (clave, valor) VALUES ('visibilidad', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)",
+      [JSON.stringify(datos)]
+    );
+    res.json({ ok: true, data: datos });
+  } catch (err) {
+    console.error("ERROR guardarVisibilidad:", err);
+    res.status(500).json({ error: "Error guardando la visibilidad." });
   }
 };

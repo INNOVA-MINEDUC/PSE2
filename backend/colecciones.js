@@ -12,6 +12,7 @@
 //   upsert      actualiza las existentes y agrega las nuevas
 //   reemplazar  por cada valor de "grupo" presente en el archivo, borra sus filas y carga las del archivo
 // etiquetas: nombre legible de cada columna (hoja de instrucciones de la plantilla)
+// alias: encabezados viejos que se siguen aceptando al importar (p. ej. tras renombrar una etiqueta)
 
 const entero = { tipo: "entero", min: 0 };
 
@@ -24,12 +25,13 @@ export const COLECCIONES = {
     eliminar: false,
     orden: "cod_departamento = 99 DESC, departamento",
     importar: { modo: "actualizar" },
+    alias: { atenciones: ["Consultas atendidas"] },
     etiquetas: {
       cod_departamento: "Código de departamento (99 = total nacional). No modificar.",
       departamento: "Nombre del departamento",
       periodo: "Período, texto largo (ej.: Del 01 de enero al 28 de agosto 2026)",
       periodo_corto: "Período, texto corto (ej.: 01 enero - 28 agosto)",
-      atenciones: "Consultas atendidas",
+      atenciones: "Atenciones",
       estudiantes_atendidos: "Estudiantes atendidos",
       est_atendidos_f: "Estudiantes atendidos, femenino",
       est_atendidos_m: "Estudiantes atendidos, masculino",
@@ -114,11 +116,12 @@ export const COLECCIONES = {
     publico: true,
     orden: "anio",
     importar: { modo: "upsert" },
+    alias: { consultas: ["Consultas atendidas"] },
     etiquetas: {
       anio: "Año",
       periodo_inicio: "Inicio del período (ej.: 01 enero)",
       periodo_fin: "Fin del período (ej.: 31 diciembre)",
-      consultas: "Consultas atendidas",
+      consultas: "Atenciones",
       estudiantes: "Estudiantes atendidos",
       llamadas: "Llamadas al 1528",
       infecciones_respiratorias: "Infecciones respiratorias",
@@ -213,4 +216,17 @@ export const COLECCIONES = {
 export const CONFIGURACION = {
   anio_actual: { tipo: "entero", min: 2000, requerido: true },
   correo_contacto: { tipo: "correo", requerido: true },
+};
+
+// Qué muestra el portal (configuracion, clave "visibilidad", JSON). Lo que falte en la BD queda visible.
+// cifras: tarjetas de "Cifras del programa" en Inicio; el texto vacío vuelve a la etiqueta por defecto.
+export const VISIBILIDAD = {
+  paginas: ["resultados", "multianual", "geografico", "promocion", "llamadas", "apoyo-funerario", "material"],
+  secciones: ["acceso", "cifras", "beneficios", "noticias", "pasos", "normativa", "contacto"],
+  cifras: {
+    estudiantes_atendidos: "Estudiantes atendidos",
+    medicamentos_dispensados: "Medicamentos entregados",
+    atenciones: "Casos atendidos",
+    establecimientos_beneficiados: "Centros educativos beneficiados",
+  },
 };
