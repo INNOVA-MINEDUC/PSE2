@@ -1,11 +1,11 @@
 # Basado en el Dockerfile de PSE-FINAL
-FROM node:22-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts
 COPY . .
 
-FROM node:22-alpine AS runner
+FROM node:26-alpine AS runner
 ENV NODE_ENV=production
 WORKDIR /app
 RUN apk upgrade --no-cache libcrypto3 libssl3 \
