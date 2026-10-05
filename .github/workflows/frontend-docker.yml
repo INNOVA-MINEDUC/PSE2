@@ -1,6 +1,7 @@
 name: Frontend Docker CI/CD
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main", "development" ]
     paths:
