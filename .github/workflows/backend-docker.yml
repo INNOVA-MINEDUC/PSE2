@@ -1,0 +1,199 @@
+name: Backend Docker CI/CD
+
+# Este workflow automatiza la construcción y publicación de la imagen de Docker
+# en GitHub Container Registry (GHCR) cada vez que se suben cambios al backend.
+
+on:
+  push:
+    branches: [ "main", "development" ]
+    paths:
+      - "backend/**"
+      - "!backend/**/*.md"
+      - "!backend/.gitignore"
+
+env:
+  REGISTRY: ghcr.io
+  # El nombre de la imagen será: ghcr.io/usuario/repo-backend
+  IMAGE_NAME: ${{ github.repository }}-backend
+
+jobs:
+  analisis-estatico:
+    name: Análisis de Código (Semgrep)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+      
+      - name: Instalar y Ejecutar Semgrep
+        run: |
+          python3 -m pip install semgrep
+          semgrep scan --config="p/default" --sarif -o semgrep.sarif || true
+          
+      - name: Subir Reporte Semgrep a GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+  build-and-push:
+    needs: analisis-estatico
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Determina el ambiente según la rama que disparó el workflow
+      - name: Set environment config
+        id: config
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [ "$REF_NAME" = "main" ]; then
+            echo "ENV_NAME=production" >> $GITHUB_OUTPUT
+          else
+            echo "ENV_NAME=development" >> $GITHUB_OUTPUT
+          fi
+
+      # PASO DE CONTROL: Generamos Timestamp y Short SHA
+      - name: Generate custom identifiers
+        id: vars
+        run: |
+          echo "TS=$(date +'%Y%m%d_%H%M')" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # ESTRATEGIA DE TAGS: (Ambiente-latest, Ambiente-Timestamp-ShortSHA, CommitSHA)
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.config.outputs.ENV_NAME }}-latest
+            type=raw,value=${{ steps.config.outputs.ENV_NAME }}-${{ steps.vars.outputs.TS }}-${{ steps.vars.outputs.SHORT_SHA }}
+            type=sha,format=short
+
+      - name: Construir imagen local para escaneo
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          load: true
+          tags: local-scan:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Ejecutar Trivy (Generar Reporte de Auditoría)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'local-scan:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          # Aquí no ponemos exit-code para asegurar que genere el reporte completo
+
+      - name: Subir Reporte Trivy a GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy
+
+      - name: Ejecutar Trivy (Control de Calidad - Bloqueo)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'local-scan:latest'
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+
+      - name: Workflow Summary
+        run: |
+          echo "### Imagen publicada (Backend)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Ambiente:** ${{ steps.config.outputs.ENV_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag:** ${{ steps.config.outputs.ENV_NAME }}-${{ steps.vars.outputs.TS }}-${{ steps.vars.outputs.SHORT_SHA }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Registry:** ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
+
+  deploy-dev:
+    name: Deploy to Development Server
+    needs: build-and-push
+    if: github.ref_name == 'development'
+    runs-on: ubuntu-latest
+    concurrency: deploy-development
+    permissions:
+      contents: read
+      packages: read
+    
+    steps:
+      - name: Execute Remote SSH Commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEV_SERVER_IP }}
+          username: ${{ secrets.DEV_SERVER_USER }}
+          password: ${{ secrets.DEV_SERVER_PASSWORD }}
+          port: ${{ secrets.DEV_SERVER_PORT }}
+          script: |
+            set -e
+            cd /opt/public_html/PSE2
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker compose pull
+            # Migraciones: one-off container con la imagen recién bajada.
+            # Fail-fast: si fallan, set -e aborta y NO se actualiza la app.
+            docker compose run --rm pse-backend node scripts/migrate.js
+            docker compose up -d
+            docker image prune -a -f
+
+  deploy-prod:
+    name: Deploy to Production Server
+    needs: build-and-push
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    concurrency: deploy-production
+    permissions:
+      contents: read
+      packages: read
+    
+    steps:
+      - name: Execute Remote SSH Commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_SERVER_IP }}
+          username: ${{ secrets.PROD_SERVER_USER }}
+          password: ${{ secrets.PROD_SERVER_PASSWORD }}
+          port: ${{ secrets.PROD_SERVER_PORT }}
+          script: |
+            set -e
+            cd /opt/public_html/PSE2
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker compose pull
+            # Migraciones: one-off container con la imagen recién bajada.
+            # Fail-fast: si fallan, set -e aborta y NO se actualiza la app.
+            docker compose run --rm pse-backend node scripts/migrate.js
+            docker compose up -d
+            docker image prune -a -f
