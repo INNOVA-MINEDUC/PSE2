@@ -2,6 +2,7 @@ import { pool } from "../db.js";
 import { COLECCIONES, CONFIGURACION, VISIBILIDAD } from "../colecciones.js";
 import { validarRegistro, validarCampo } from "../validacion.js";
 import { borrarSubido } from "../middleware/upload.middleware.js";
+import { auditar, aplanar, detalleCrear, detalleActualizar, detalleEliminar } from "../auditoria.js";
 
 const columnas = (c) => [c.pk, ...Object.keys(c.campos).filter((k) => k !== c.pk)].map((k) => `\`${k}\``).join(", ");
 
@@ -115,7 +116,9 @@ export const crear = async (req, res) => {
 
   try {
     const [r] = await pool.query(`INSERT INTO \`${c.tabla}\` SET ?`, [datos]);
-    res.status(201).json({ data: { [c.pk]: c.pkEnCampos ? datos[c.pk] : r.insertId } });
+    const id = c.pkEnCampos ? datos[c.pk] : r.insertId;
+    await auditar(req, { accion: "crear", entidad: req.params.coleccion, entidadId: id, detalle: detalleCrear(datos) });
+    res.status(201).json({ data: { [c.pk]: id } });
   } catch (err) {
     if (err.code === "ER_DUP_ENTRY") return res.status(409).json({ error: "Ya existe un registro con ese identificador." });
     console.error("ERROR crear:", err);
@@ -140,6 +143,7 @@ export const actualizar = async (req, res) => {
     if (!anterior) return res.status(404).json({ error: "Registro no encontrado." });
 
     await pool.query(`UPDATE \`${c.tabla}\` SET ? WHERE \`${c.pk}\` = ?`, [datos, req.params.id]);
+    await auditar(req, { accion: "actualizar", entidad: req.params.coleccion, entidadId: req.params.id, detalle: detalleActualizar(anterior, datos) });
     await limpiarArchivos(c, anterior, datos);
     res.json({ ok: true });
   } catch (err) {
@@ -161,6 +165,7 @@ export const eliminar = async (req, res) => {
     if (!anterior) return res.status(404).json({ error: "Registro no encontrado." });
 
     await pool.query(`DELETE FROM \`${c.tabla}\` WHERE \`${c.pk}\` = ?`, [req.params.id]);
+    await auditar(req, { accion: "eliminar", entidad: req.params.coleccion, entidadId: req.params.id, detalle: detalleEliminar(anterior) });
     await limpiarArchivos(c, anterior);
     res.json({ ok: true });
   } catch (err) {
@@ -178,12 +183,15 @@ export const guardarConfiguracion = async (req, res) => {
     datos[clave] = String(valor);
   }
   try {
+    const [previas] = await pool.query("SELECT clave, valor FROM configuracion WHERE clave IN (?)", [Object.keys(datos)]);
+    const antes = Object.fromEntries(previas.map((r) => [r.clave, r.valor]));
     for (const [clave, valor] of Object.entries(datos)) {
       await pool.query(
         "INSERT INTO configuracion (clave, valor) VALUES (?, ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)",
         [clave, valor]
       );
     }
+    await auditar(req, { accion: "actualizar", entidad: "configuracion", detalle: detalleActualizar(antes, datos) });
     res.json({ ok: true });
   } catch (err) {
     console.error("ERROR guardarConfiguracion:", err);
@@ -195,10 +203,22 @@ export const guardarConfiguracion = async (req, res) => {
 export const guardarVisibilidad = async (req, res) => {
   const datos = normalizarVisibilidad(req.body);
   try {
+    const [[previa]] = await pool.query("SELECT valor FROM configuracion WHERE clave = 'visibilidad'");
+    let antes = {};
+    try {
+      antes = previa ? JSON.parse(previa.valor) : {};
+    } catch {
+      // JSON dañado: se compara contra los valores por defecto
+    }
     await pool.query(
       "INSERT INTO configuracion (clave, valor) VALUES ('visibilidad', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)",
       [JSON.stringify(datos)]
     );
+    await auditar(req, {
+      accion: "actualizar",
+      entidad: "visibilidad",
+      detalle: detalleActualizar(aplanar(normalizarVisibilidad(antes)), aplanar(datos)),
+    });
     res.json({ ok: true, data: datos });
   } catch (err) {
     console.error("ERROR guardarVisibilidad:", err);

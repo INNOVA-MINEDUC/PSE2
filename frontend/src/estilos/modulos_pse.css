@@ -771,6 +771,22 @@ p.adm-campo span {
     min-width: 260px;
 }
 
+.adm-auditoria-detalle {
+    min-width: 260px;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.adm-auditoria-detalle ul {
+    margin: 0 0 4px;
+    padding-left: 16px;
+    overflow-wrap: anywhere;
+}
+
+.adm-auditoria-detalle small {
+    color: #64748b;
+}
+
 .adm-mi-clave {
     margin-top: 32px;
 }

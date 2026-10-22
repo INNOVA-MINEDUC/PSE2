@@ -1,6 +1,7 @@
 import { pool } from "../db.js";
 import { verificarClave, HASH_FALSO, nuevoToken, hashToken } from "../seguridad.js";
 import { COOKIE_SESION, DURACION_SESION_MS, opcionesCookie } from "../middleware/auth.middleware.js";
+import { auditar } from "../auditoria.js";
 
 const ERROR_CREDENCIALES = "Correo o contraseña incorrectos.";
 
@@ -18,7 +19,11 @@ export const login = async (req, res) => {
     );
 
     const valida = await verificarClave(clave, usuario?.clave_hash || HASH_FALSO);
-    if (!usuario || !valida) return res.status(401).json({ error: ERROR_CREDENCIALES });
+    if (!usuario || !valida) {
+      // Se guarda el correo intentado (nunca la contraseña) para detectar intentos de acceso
+      await auditar(req, { accion: "login_fallido", entidad: "sesion", usuario: { id: usuario?.id, correo: correo.slice(0, 255) } });
+      return res.status(401).json({ error: ERROR_CREDENCIALES });
+    }
 
     const token = nuevoToken();
     await pool.query(
@@ -29,6 +34,7 @@ export const login = async (req, res) => {
     await pool.query("UPDATE usuarios SET ultimo_acceso = NOW() WHERE id = ?", [usuario.id]);
     // Limpieza de sesiones vencidas
     await pool.query("DELETE FROM sesiones WHERE expira_en < NOW()");
+    await auditar(req, { accion: "login", entidad: "sesion", usuario });
 
     res.cookie(COOKIE_SESION, token, opcionesCookie());
     res.json({ data: { id: usuario.id, correo: usuario.correo, nombre: usuario.nombre } });
@@ -41,6 +47,7 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     await pool.query("DELETE FROM sesiones WHERE token_hash = ?", [hashToken(req.tokenSesion)]);
+    await auditar(req, { accion: "logout", entidad: "sesion" });
   } catch (err) {
     console.error("ERROR logout:", err);
   }

@@ -47,6 +47,7 @@
         <AdminConfiguracion v-else-if="apartado.id === 'configuracion'" />
         <AdminVisibilidad v-else-if="apartado.id === 'visibilidad'" />
         <AdminUsuarios v-else-if="apartado.id === 'usuarios'" />
+        <AdminAuditoria v-else-if="apartado.id === 'auditoria'" />
         <AdminCrud v-else :key="apartado.id" :coleccion="apartado.id" />
 
       </div>
@@ -66,6 +67,7 @@ import AdminRecursos from '../components/admin/AdminRecursos.vue'
 import AdminConfiguracion from '../components/admin/AdminConfiguracion.vue'
 import AdminVisibilidad from '../components/admin/AdminVisibilidad.vue'
 import AdminUsuarios from '../components/admin/AdminUsuarios.vue'
+import AdminAuditoria from '../components/admin/AdminAuditoria.vue'
 import AdminCrud from '../components/admin/AdminCrud.vue'
 import { useAuth } from '../composables/useAuth'
 
@@ -95,7 +97,8 @@ const SECCIONES = [
       { id: 'visibilidad', nombre: 'Visibilidad' }
     ]
   },
-  { id: 'usuarios', nombre: 'Usuarios' }
+  { id: 'usuarios', nombre: 'Usuarios' },
+  { id: 'auditoria', nombre: 'Auditoría' }
 ]
 
 const route = useRoute()

@@ -2,6 +2,7 @@ import { pool } from "../db.js";
 import { COLECCIONES } from "../colecciones.js";
 import { validarCampo, validarRegistro } from "../validacion.js";
 import { leerHoja, generarCsv, generarXlsx, normalizar, MAX_FILAS } from "../hojas.js";
+import { auditar } from "../auditoria.js";
 
 const MAX_ERRORES = 100;
 
@@ -190,6 +191,11 @@ export const importar = async (req, res) => {
       }
     }
     await conn.commit();
+    await auditar(req, {
+      accion: "importar",
+      entidad: req.params.coleccion,
+      detalle: { archivo: req.file.originalname?.slice(0, 255), filas: hoja.filas.length, cambios },
+    });
     res.json({ data: { ...resultado, aplicado: true } });
   } catch (err) {
     await conn.rollback().catch(() => {});

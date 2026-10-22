@@ -8,6 +8,7 @@ import { descargarPlantilla, importar } from "../controllers/importar.controller
 import {
   listarUsuarios, crearUsuario, actualizarUsuario, restablecerClave, eliminarUsuario,
 } from "../controllers/usuarios.controller.js";
+import { listarAuditoria } from "../controllers/auditoria.controller.js";
 import { requireAuth, mismoOrigen } from "../middleware/auth.middleware.js";
 import { adminLimiter } from "../middleware/rateLimiter.middleware.js";
 import { subirImagen, subirPdf, subirAudio, recibirHoja } from "../middleware/upload.middleware.js";
@@ -41,6 +42,8 @@ router.post("/usuarios", crearUsuario);
 router.put("/usuarios/:id", actualizarUsuario);
 router.put("/usuarios/:id/clave", restablecerClave);
 router.delete("/usuarios/:id", eliminarUsuario);
+
+router.get("/auditoria", listarAuditoria);
 
 router.post("/uploads/imagen", subirImagen, archivoSubido);
 router.post("/uploads/pdf", subirPdf, archivoSubido);

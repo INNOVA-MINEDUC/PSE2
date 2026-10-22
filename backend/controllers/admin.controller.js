@@ -1,6 +1,7 @@
 import { pool } from "../db.js";
 import { validarNoticia, RECURSOS, urlValida } from "../validacion.js";
 import { borrarSubido } from "../middleware/upload.middleware.js";
+import { auditar, detalleCrear, detalleActualizar, detalleEliminar } from "../auditoria.js";
 
 // ---------- Noticias ----------
 
@@ -24,6 +25,7 @@ export const crearNoticia = async (req, res) => {
 
   try {
     const [r] = await pool.query("INSERT INTO noticias SET ?", [datos]);
+    await auditar(req, { accion: "crear", entidad: "noticias", entidadId: r.insertId, detalle: detalleCrear(datos) });
     res.status(201).json({ data: { id: r.insertId } });
   } catch (err) {
     console.error("ERROR crearNoticia:", err);
@@ -37,10 +39,11 @@ export const actualizarNoticia = async (req, res) => {
   if (error) return res.status(400).json({ error });
 
   try {
-    const [[anterior]] = await pool.query("SELECT imagen_url FROM noticias WHERE id = ?", [id]);
+    const [[anterior]] = await pool.query("SELECT * FROM noticias WHERE id = ?", [id]);
     if (!anterior) return res.status(404).json({ error: "Noticia no encontrada." });
 
     await pool.query("UPDATE noticias SET ? WHERE id = ?", [datos, id]);
+    await auditar(req, { accion: "actualizar", entidad: "noticias", entidadId: id, detalle: detalleActualizar(anterior, datos) });
     if (anterior.imagen_url !== datos.imagen_url) await borrarSubido(anterior.imagen_url);
     res.json({ ok: true });
   } catch (err) {
@@ -52,10 +55,11 @@ export const actualizarNoticia = async (req, res) => {
 export const eliminarNoticia = async (req, res) => {
   const id = Number.parseInt(req.params.id, 10);
   try {
-    const [[noticia]] = await pool.query("SELECT imagen_url FROM noticias WHERE id = ?", [id]);
+    const [[noticia]] = await pool.query("SELECT * FROM noticias WHERE id = ?", [id]);
     if (!noticia) return res.status(404).json({ error: "Noticia no encontrada." });
 
     await pool.query("DELETE FROM noticias WHERE id = ?", [id]);
+    await auditar(req, { accion: "eliminar", entidad: "noticias", entidadId: id, detalle: detalleEliminar(noticia) });
     await borrarSubido(noticia.imagen_url);
     res.json({ ok: true });
   } catch (err) {
@@ -102,6 +106,12 @@ export const guardarRecurso = async (req, res) => {
       await pool.query("DELETE FROM recursos_modulo WHERE modulo = ? AND clave = ?", [modulo, clave]);
     }
 
+    await auditar(req, {
+      accion: !url ? "eliminar" : anterior ? "actualizar" : "crear",
+      entidad: "recursos",
+      entidadId: `${modulo}/${clave}`,
+      detalle: detalleActualizar({ url: anterior?.url ?? null }, { url: url || null }),
+    });
     if (anterior && anterior.url !== url) await borrarSubido(anterior.url);
     res.json({ ok: true });
   } catch (err) {

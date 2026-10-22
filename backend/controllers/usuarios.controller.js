@@ -1,5 +1,6 @@
 import { pool } from "../db.js";
 import { hashClave, verificarClave, CLAVE_MINIMA, hashToken } from "../seguridad.js";
+import { auditar, detalleCrear, detalleActualizar, detalleEliminar } from "../auditoria.js";
 
 const correoValido = (c) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c);
 const claveCorta = (c) => String(c || "").length < CLAVE_MINIMA;
@@ -39,6 +40,7 @@ export const crearUsuario = async (req, res) => {
       "INSERT INTO usuarios (correo, nombre, clave_hash) VALUES (?, ?, ?)",
       [correo, nombre, await hashClave(clave)]
     );
+    await auditar(req, { accion: "crear", entidad: "usuarios", entidadId: r.insertId, detalle: detalleCrear({ correo, nombre }) });
     res.status(201).json({ data: { id: r.insertId } });
   } catch (err) {
     if (err.code === "ER_DUP_ENTRY") return res.status(409).json({ error: "Ya existe un usuario con ese correo." });
@@ -60,8 +62,10 @@ export const actualizarUsuario = async (req, res) => {
     if (!activo && (await adminsActivos(id)) === 0) {
       return res.status(400).json({ error: "Debe quedar al menos un usuario activo." });
     }
-    const [r] = await pool.query("UPDATE usuarios SET nombre = ?, activo = ? WHERE id = ?", [nombre, activo, id]);
-    if (!r.affectedRows) return res.status(404).json({ error: "Usuario no encontrado." });
+    const [[anterior]] = await pool.query("SELECT nombre, activo FROM usuarios WHERE id = ?", [id]);
+    if (!anterior) return res.status(404).json({ error: "Usuario no encontrado." });
+    await pool.query("UPDATE usuarios SET nombre = ?, activo = ? WHERE id = ?", [nombre, activo, id]);
+    await auditar(req, { accion: "actualizar", entidad: "usuarios", entidadId: id, detalle: detalleActualizar(anterior, { nombre, activo }) });
     if (!activo) await pool.query("DELETE FROM sesiones WHERE usuario_id = ?", [id]);
     res.json({ ok: true });
   } catch (err) {
@@ -80,6 +84,7 @@ export const restablecerClave = async (req, res) => {
     const [r] = await pool.query("UPDATE usuarios SET clave_hash = ? WHERE id = ?", [await hashClave(clave), id]);
     if (!r.affectedRows) return res.status(404).json({ error: "Usuario no encontrado." });
     await pool.query("DELETE FROM sesiones WHERE usuario_id = ?", [id]);
+    await auditar(req, { accion: "clave", entidad: "usuarios", entidadId: id, detalle: { restablecida: true } });
     res.json({ ok: true });
   } catch (err) {
     console.error("ERROR restablecerClave:", err);
@@ -95,8 +100,10 @@ export const eliminarUsuario = async (req, res) => {
     if ((await adminsActivos(id)) === 0) {
       return res.status(400).json({ error: "Debe quedar al menos un usuario activo." });
     }
-    const [r] = await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
-    if (!r.affectedRows) return res.status(404).json({ error: "Usuario no encontrado." });
+    const [[anterior]] = await pool.query("SELECT correo, nombre, activo FROM usuarios WHERE id = ?", [id]);
+    if (!anterior) return res.status(404).json({ error: "Usuario no encontrado." });
+    await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
+    await auditar(req, { accion: "eliminar", entidad: "usuarios", entidadId: id, detalle: detalleEliminar(anterior) });
     res.json({ ok: true });
   } catch (err) {
     console.error("ERROR eliminarUsuario:", err);
@@ -121,6 +128,7 @@ export const cambiarMiClave = async (req, res) => {
       "DELETE FROM sesiones WHERE usuario_id = ? AND token_hash <> ?",
       [req.usuario.id, hashToken(req.tokenSesion)]
     );
+    await auditar(req, { accion: "clave", entidad: "usuarios", entidadId: req.usuario.id, detalle: { propia: true } });
     res.json({ ok: true });
   } catch (err) {
     console.error("ERROR cambiarMiClave:", err);

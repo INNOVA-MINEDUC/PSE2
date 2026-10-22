@@ -1,0 +1,44 @@
+# Servidor (dev y prod): imágenes publicadas por GitHub Actions en GHCR.
+#
+# En el servidor, en la carpeta del deploy (ver .github/workflows), van:
+#   - docker-compose.yml  = una copia de este archivo
+#   - .env                = variables del backend (DB_HOST, DB_PASSWORD, ...; ver backend/.env.example)
+#                           y, solo en el servidor de desarrollo: IMAGE_TAG=development-latest
+#
+# El workflow hace en cada push: pull -> migraciones (scripts/migrate.js) -> up -d.
+# Primer usuario del panel:
+#   docker compose exec pse-backend node scripts/crear-admin.js correo@mineduc.gob.gt "Nombre"
+#
+# El sitio debe publicarse detrás de HTTPS: la cookie de sesión del panel es Secure.
+services:
+  pse-backend:
+    image: ghcr.io/innova-mineduc/pse2-backend:${IMAGE_TAG:-production-latest}
+    container_name: pse-backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3000
+    # Sin puerto publicado: solo el frontend (nginx) le habla por /api
+    volumes:
+      - pse-uploads:/app/uploads
+    networks:
+      - pse-network
+
+  pse-frontend:
+    image: ghcr.io/innova-mineduc/pse2-frontend:${IMAGE_TAG:-production-latest}
+    container_name: pse-frontend
+    restart: unless-stopped
+    ports:
+      - "8089:8080"
+    depends_on:
+      - pse-backend
+    networks:
+      - pse-network
+
+networks:
+  pse-network:
+    driver: bridge
+
+volumes:
+  # Archivos subidos desde el panel cuando no se usa bucket (STORAGE_DRIVER)
+  pse-uploads:
